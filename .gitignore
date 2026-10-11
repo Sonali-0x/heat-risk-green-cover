@@ -1,0 +1,12 @@
+# Local environment and Python-generated files
+.env
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Generated contents; keep the directories in Git
+outputs/*
+!outputs/.gitkeep
+site/*
+!site/.gitkeep

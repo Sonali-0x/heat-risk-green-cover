@@ -1,0 +1,8 @@
+# Core data, geospatial, and mapping dependencies.
+earthengine-api==1.7.47
+geopandas==1.2.0
+pandas==3.0.6
+folium==0.20.0
+branca==0.8.2
+python-dotenv==1.2.4
+

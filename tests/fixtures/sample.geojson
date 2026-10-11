@@ -1,0 +1,19 @@
+{
+  "type": "FeatureCollection",
+  "name": "synthetic_test_fixture_not_source_data",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "synthetic": true,
+        "ndvi": 0.12,
+        "lst_c": 39.5,
+        "population_estimate": 1200
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [79.0, 21.0]
+      }
+    }
+  ]
+}
