@@ -22,9 +22,22 @@ aside{background:var(--pane);padding:18px 14px;display:flex;flex-direction:colum
 @media(max-width:1000px){.row{grid-template-columns:1fr}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:14px}
 .card h3{font-size:16px;margin-bottom:8px}.lbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin:14px 0 8px}
-button{font:inherit;cursor:pointer;touch-action:manipulation}
-.btn{background:var(--sage);color:#fff;border:0;border-radius:24px;padding:12px 16px;font-weight:600;width:100%}.btn.out{background:var(--card);color:var(--brown);border:1px solid var(--line)}.btn.in{width:auto}
-.chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:16px;padding:5px 14px;cursor:pointer}.chip.on{background:var(--sage);color:#fff;border-color:var(--sage)}
+button{font:inherit;cursor:pointer;touch-action:manipulation;transition:background .15s,color .15s,border-color .15s,transform .1s,box-shadow .15s}
+button:active{transform:scale(.98)}
+.btn{background:var(--sage);color:#fff;border:0;border-radius:24px;padding:12px 16px;font-weight:600;width:100%;box-shadow:0 2px 6px #7a9a6b33}
+.btn:hover{filter:brightness(1.08);box-shadow:0 4px 10px #7a9a6b44}
+.btn.out{background:var(--card);color:var(--brown);border:1px solid var(--line);box-shadow:none}
+.btn.out:hover{background:var(--pane);border-color:var(--tan);color:var(--ink)}
+.btn.in{width:auto}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:16px;padding:5px 14px;cursor:pointer;transition:all .15s}
+.chip:hover{border-color:var(--sage);background:var(--pane)}
+.chip.on{background:var(--sage);color:#fff;border-color:var(--sage)}
+.pill{border:0;background:transparent;color:var(--brown);padding:8px 16px;border-radius:24px;font:inherit;font-weight:600;cursor:pointer;transition:all .15s}
+.pill:hover{background:var(--card);color:var(--ink)}
+.pill.on{background:var(--sage);color:#fff}
+.side-sec{margin-top:14px;padding-top:10px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:4px}
+.side-foot{font-size:11px;color:var(--mut);margin-top:auto;padding-top:8px;border-top:1px solid var(--line);display:flex;gap:6px;flex-wrap:wrap}
+@media(max-width:820px){.side-sec,.side-foot{display:none}}
 .bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;align-items:center}
 .mapc{background:linear-gradient(160deg,#f7dcc0,#efe6d3 60%,#dfe8d4);border-radius:28px;padding:12px;box-shadow:0 6px 24px #8a6a4a22}
 .gw{position:relative}.grid{display:grid;gap:2px;width:100%}
@@ -56,14 +69,14 @@ ul.log{margin:6px 0 0;padding-left:18px;font-size:13px}ul.chk{list-style:none;pa
 @media(max-width:520px){th:nth-child(n+5),td:nth-child(n+5){display:none}}
 </style></head><body>
 <aside><div class="logo"><i>❦</i><h1>TerraAtlas</h1></div><div id="nav" style="display:flex;flex-direction:column;gap:6px"></div>
-<div style="margin-top:14px;padding-top:10px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:4px">
+<div class="side-sec">
   <div class="lbl" style="margin:4px 0 2px 14px">Direct artifacts</div>
   <a class="nv" href="priority_map.html" target="_blank" rel="noopener"><span>🗺</span>Explore the priority map</a>
   <a class="nv" href="top_priority_cells.csv" download><span>⬇</span>Download ranked cells (CSV)</a>
   <a class="nv" href="action_report.md" target="_blank" rel="noopener"><span>📄</span>Read the action report</a>
 </div>
 <div class="stat-card" id="sideStatus"><b>DATA STATUS</b><span class="dot"></span>Loading...</div>
-<div style="font-size:11px;color:var(--mut);margin-top:auto;padding-top:8px;border-top:1px solid var(--line);display:flex;gap:6px;flex-wrap:wrap">
+<div class="side-foot">
   <a href="privacy.html" style="color:var(--mut);text-decoration:none">Privacy</a> ·
   <a href="disclaimer.html" style="color:var(--mut);text-decoration:none">Disclaimer</a> ·
   <a href="https://earthengine.google.com/" style="color:var(--mut);text-decoration:none" target="_blank" rel="noopener">Earth Engine</a>
@@ -168,7 +181,7 @@ function panel(){
 <div class="an"><div><span>Surface heat</span><span>${hText}</span></div>${bars(prof(c,'heat'),'#c9824a')}</div>
 ${c.built!==undefined?`<div class="note" style="margin-bottom:8px">Built-up: ${Math.round(c.built*100)}% · Tree canopy: ${Math.round(c.tree*100)}%</div>`:''}
 <div class="lbl">Priority formula weights</div>${sl('h','Urban heat',S.w.h,0,100)}${sl('g','Low green cover',S.w.g,0,100)}${sl('p','Population proximity',S.w.p,0,100)}${sl('top','Top-priority areas',S.top,3,40)}
-<div style="display:grid;gap:8px;margin-top:14px"><button class="btn" data-tab="report">Generate Field Briefing</button><button class="btn out" id="csv">Export Spatial Data (CSV)</button></div></div>`;
+<div style="display:grid;margin-top:14px"><button class="btn out" data-tab="priorities">Open in Priority Zones Table →</button></div></div>`;
 }
 
 function tele(){
@@ -252,19 +265,40 @@ function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';cl
 function modal(title,txt){$('#mt').textContent=title;$('#mx').value=txt;$('#modal').style.display='flex'}
 function save(name,data){
   try{
-    const blob=new Blob([data],{type:name.endsWith('.csv')?'text/csv':'text/plain'});
+    const blob=new Blob([data],{type:name.endsWith('.csv')?'text/csv;charset=utf-8;':'text/plain;charset=utf-8;'});
     const a=document.createElement('a');
-    a.href=URL.createObjectURL(blob);
+    const u=URL.createObjectURL(blob);
+    a.href=u;
     a.download=name;
+    a.style.display='none';
     document.body.appendChild(a);
     a.click();
-    document.body.removeChild(a);
+    setTimeout(()=>{URL.revokeObjectURL(u);if(a.parentNode)a.parentNode.removeChild(a)},200);
     toast('Saved '+name);
     return;
   }catch(e){}
   modal(name,data);
 }
-async function copy(t){try{await navigator.clipboard.writeText(t);toast('Copied')}catch(e){modal('Copy text',t)}}
+function copy(t){
+  if(navigator.clipboard&&window.isSecureContext){
+    navigator.clipboard.writeText(t).then(()=>toast('Copied to clipboard')).catch(()=>fallbackCopy(t));
+  }else{
+    fallbackCopy(t);
+  }
+}
+function fallbackCopy(t){
+  const ta=$('#mx');
+  if(ta){
+    ta.focus();
+    ta.select();
+    try{
+      document.execCommand('copy');
+      toast('Copied to clipboard');
+      return;
+    }catch(e){}
+  }
+  toast('Select text and copy manually');
+}
 function csv(){
   const isReal = S.city==='Nagpur'&&S.mode==='real';
   const header = isReal
@@ -286,8 +320,8 @@ document.addEventListener('click',e=>{
   else if(b=q('[data-mode]')){S.mode=b.dataset.mode;S.sel=null;gen()}
   else if(b=q('.c')){S.sel=+b.dataset.i;cell=true;const c=cells[S.sel];if(S.tab==='disaster')toast(c.zn+': heatwave exposure '+Math.round(hz(c)*100)+'%')}
   else if(b=q('[data-s]')){const k=b.dataset.s;S.sort=S.sort.k===k?{k,d:-S.sort.d}:{k,d:['rank','zn','act'].includes(k)?1:-1}}
-  else if(b=q('[data-row]')){S.sel=+b.dataset.row;S.tab='map'}
-  else if(b=q('[data-pick]')){e.preventDefault();S.sel=+b.dataset.pick;S.tab='map'}
+  else if(b=q('[data-row]')){S.sel=+b.dataset.row;S.tab='map';cell=true}
+  else if(b=q('[data-pick]')){e.preventDefault();S.sel=+b.dataset.pick;S.tab='map';cell=true}
   else if(b=q('[data-lang]'))S.lang=b.dataset.lang;
   else if(q('#deploy')){S.dz.dep=!S.dz.dep;toast(S.dz.dep?S.dz.units+' units deployed':'Units recalled')}
   else if(q('#alertBtn')){modal('Public alert ('+(S.lang==='mr'?'मराठी':'English')+')',alertText());return}
@@ -297,7 +331,7 @@ document.addEventListener('click',e=>{
   else if(q('#mclose')||t.id==='modal'){$('#modal').style.display='none';return}
   else return;
   render();
-  if(cell&&S.tab==='map'&&innerWidth<=1000)$('#det').scrollIntoView({behavior:'smooth',block:'nearest'});
+  if(cell&&S.tab==='map'&&innerWidth<=1000&&$('#det'))$('#det').scrollIntoView({behavior:'smooth',block:'nearest'});
 });
 
 document.addEventListener('input',e=>{
