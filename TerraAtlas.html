@@ -55,9 +55,25 @@ ul.log{margin:6px 0 0;padding-left:18px;font-size:13px}ul.chk{list-style:none;pa
 @media(max-width:640px){.mc{padding:10px}.card,.panel{padding:10px}.grid{gap:1px}.c{border-radius:2px}.zl span{font-size:8.5px}.pills{display:flex;overflow-x:auto}.pill{flex:1;padding:8px 10px}th,td{padding:7px 5px;font-size:13px}.btn.in{width:100%}.mapc{border-radius:20px;padding:8px}.tele{font-size:11px}}
 @media(max-width:520px){th:nth-child(n+5),td:nth-child(n+5){display:none}}
 </style></head><body>
-<aside><div class="logo"><i>❦</i><h1>TerraAtlas</h1></div><div id="nav" style="display:contents"></div>
-<div class="stat-card" id="sideStatus"><b>DATA STATUS</b><span class="dot"></span>Loading...</div></aside>
-<div class="mc"><div class="pills" id="pills"></div><div id="app"></div></div>
+<aside><div class="logo"><i>❦</i><h1>TerraAtlas</h1></div><div id="nav" style="display:flex;flex-direction:column;gap:6px"></div>
+<div style="margin-top:14px;padding-top:10px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:4px">
+  <div class="lbl" style="margin:4px 0 2px 14px">Direct artifacts</div>
+  <a class="nv" href="priority_map.html" target="_blank" rel="noopener"><span>🗺</span>Explore the priority map</a>
+  <a class="nv" href="top_priority_cells.csv" download><span>⬇</span>Download ranked cells (CSV)</a>
+  <a class="nv" href="action_report.md" target="_blank" rel="noopener"><span>📄</span>Read the action report</a>
+</div>
+<div class="stat-card" id="sideStatus"><b>DATA STATUS</b><span class="dot"></span>Loading...</div>
+<div style="font-size:11px;color:var(--mut);margin-top:auto;padding-top:8px;border-top:1px solid var(--line);display:flex;gap:6px;flex-wrap:wrap">
+  <a href="privacy.html" style="color:var(--mut);text-decoration:none">Privacy</a> ·
+  <a href="disclaimer.html" style="color:var(--mut);text-decoration:none">Disclaimer</a> ·
+  <a href="https://earthengine.google.com/" style="color:var(--mut);text-decoration:none" target="_blank" rel="noopener">Earth Engine</a>
+</div></aside>
+<div class="mc"><div class="pills" id="pills"></div><div id="app"></div>
+<footer style="margin-top:24px;padding:14px;background:var(--pane);border-radius:18px;border:1px solid var(--line);font-size:12px;color:var(--mut)">
+  <p style="margin:0 0 6px"><b>Accessible text alternative:</b> the downloadable CSV (<a href="top_priority_cells.csv" style="color:var(--brown)">top_priority_cells.csv</a>) contains one row per ranked cell, with coordinates, source metrics, score, and recommended action. The <a href="action_report.md" style="color:var(--brown)">action report</a> summarizes the ranking and its uncertainty.</p>
+  <p style="margin:0"><b>Licensing &amp; Attribution:</b> <span id="licenseStatusText">Verification is pending.</span> Planning aid only; field verification is required.</p>
+</footer>
+</div>
 <div id="modal"><div class="card"><h3 id="mt">Export data</h3><p class="note">Direct download or copy data below:</p><textarea id="mx" readonly></textarea><div class="bar" style="margin-top:8px"><button class="btn in" id="mcopy">Copy</button><button class="btn in out" id="mclose">Close</button></div></div></div>
 <div id="toast"></div>
 <script>

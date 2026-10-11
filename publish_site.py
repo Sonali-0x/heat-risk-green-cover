@@ -6,6 +6,7 @@ import argparse
 import html
 import json
 import os
+import re
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
@@ -167,8 +168,14 @@ def _document(title: str, description: str, body: str, canonical_url: Optional[s
 """
 
 
-def _landing_page(metadata: Dict[str, object], canonical_url: Optional[str]) -> str:
-    scoring = metadata["scoring"]
+def _landing_page(
+    metadata: Dict[str, object],
+    canonical_url: Optional[str],
+    outputs_dir: Optional[Path] = None,
+) -> str:
+    scoring = metadata.get("scoring", {})
+    if not isinstance(scoring, dict):
+        scoring = {}
     city = html.escape(str(scoring.get("city", "Pilot city")), quote=True)
     start = html.escape(str(scoring.get("analysis_start_inclusive", "")), quote=True)
     end = html.escape(str(scoring.get("analysis_end_inclusive", "")), quote=True)
@@ -176,6 +183,36 @@ def _landing_page(metadata: Dict[str, object], canonical_url: Optional[str]) -> 
         str(metadata.get("license_and_attribution_status", "Not recorded")),
         quote=True,
     )
+
+    template_path = Path(__file__).resolve().parent / "TerraAtlas.html"
+    if template_path.is_file():
+        try:
+            content = template_path.read_text(encoding="utf-8")
+            if canonical_url:
+                canonical_tag = f'<link rel="canonical" href="{html.escape(canonical_url, quote=True)}">\n'
+                content = content.replace("<head>", f"<head>\n{canonical_tag}", 1)
+            content = content.replace(
+                '<span id="licenseStatusText">Verification is pending.</span>',
+                f'<span id="licenseStatusText">{license_status}</span>',
+            )
+            if outputs_dir is not None:
+                real_data_path = outputs_dir / "terra_atlas_nagpur.json"
+                if real_data_path.is_file():
+                    try:
+                        raw_data = real_data_path.read_text(encoding="utf-8").strip()
+                        if raw_data:
+                            content = re.sub(
+                                r"const NAGPUR_REAL_DATA = \[.*?\];",
+                                f"const NAGPUR_REAL_DATA = {raw_data};",
+                                content,
+                                count=1,
+                            )
+                    except OSError:
+                        pass
+            return content
+        except OSError:
+            pass
+
     body = f"""
     <h1>Green Cover &amp; Urban Heat Priority Map</h1>
     <p>Explore aggregated satellite and population indicators for {city}, India.
@@ -314,7 +351,7 @@ def publish_site(
     index_url = urljoin(normalized_url, "index.html") if normalized_url else None
     _write_atomic(
         site_dir / "index.html",
-        _landing_page(metadata, index_url).encode("utf-8"),
+        _landing_page(metadata, index_url, outputs_dir).encode("utf-8"),
     )
     _legal_pages(site_dir, normalized_url)
     _write_atomic(
