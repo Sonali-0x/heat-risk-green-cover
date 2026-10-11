@@ -184,16 +184,20 @@ def _landing_page(
         quote=True,
     )
 
-    template_path = Path(__file__).resolve().parent / "TerraAtlas.html"
+    template_path = Path(__file__).resolve().parent / "index.html"
+    if not template_path.is_file():
+        template_path = Path(__file__).resolve().parent / "TerraAtlas.html"
     if template_path.is_file():
         try:
             content = template_path.read_text(encoding="utf-8")
             if canonical_url:
                 canonical_tag = f'<link rel="canonical" href="{html.escape(canonical_url, quote=True)}">\n'
                 content = content.replace("<head>", f"<head>\n{canonical_tag}", 1)
-            content = content.replace(
-                '<span id="licenseStatusText">Verification is pending.</span>',
+            content = re.sub(
+                r'<span id="licenseStatusText">.*?</span>',
                 f'<span id="licenseStatusText">{license_status}</span>',
+                content,
+                count=1,
             )
             if outputs_dir is not None:
                 real_data_path = outputs_dir / "terra_atlas_nagpur.json"

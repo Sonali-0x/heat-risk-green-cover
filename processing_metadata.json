@@ -1,0 +1,72 @@
+{
+  "artifacts": {
+    "action_report": "action_report.md",
+    "map": "priority_map.html",
+    "ranked_cells_csv": "top_priority_cells.csv"
+  },
+  "data_sources": [
+    {
+      "collection_ids": [
+        "LANDSAT/LC08/C02/T1_L2",
+        "LANDSAT/LC09/C02/T1_L2"
+      ],
+      "metrics": [
+        "NDVI",
+        "land-surface temperature (Celsius)"
+      ],
+      "name": "Landsat 8/9 Collection 2 Level 2"
+    },
+    {
+      "collection_id": "GOOGLE/DYNAMICWORLD/V1",
+      "metrics": [
+        "tree",
+        "built-up, and bare-land probabilities"
+      ],
+      "name": "Google Dynamic World"
+    },
+    {
+      "collection_id": "WorldPop/GP/100m/pop",
+      "metric": "estimated population",
+      "name": "WorldPop",
+      "reference_year": 2020
+    }
+  ],
+  "license_and_attribution_status": "Dataset-specific licenses and attributions verified: Landsat (USGS/NASA, Public Domain), Dynamic World (WRI/Google, CC-BY 4.0), WorldPop (University of Southampton, CC-BY 4.0), OpenStreetMap (ODbL).",
+  "scoring": {
+    "action_thresholds": {
+      "bare_probability_gt": 0.5,
+      "built_probability_gt": 0.6,
+      "precedence": [
+        "bare",
+        "built-up",
+        "trees",
+        "plant trees"
+      ],
+      "tree_probability_gt": 0.4
+    },
+    "analysis_end_inclusive": "2026-05-31",
+    "analysis_start_inclusive": "2026-03-01",
+    "bare_land_cell_count": 29,
+    "cell_count": 46018,
+    "city": "Nagpur",
+    "cooling_estimate": {
+      "associated_lst_change_c_per_0_1_ndvi": -1.5731490438991287,
+      "caveat": "Observational association only; it does not prove causation or guarantee that an intervention will cause this cooling.",
+      "cell_count": 45560,
+      "correlation": -0.4347952788299423,
+      "included_bare_land_cells": true,
+      "slope_celsius_per_ndvi": -15.731490438991287,
+      "statistic": "Pearson correlation and ordinary-least-squares association between cell NDVI and LST in Celsius"
+    },
+    "missing_metric_cell_count": 414,
+    "normalization": "min-max reference range across complete, non-water, non-bare priority-eligible cells; normalized values for bare-land cells are clamped to 0-1 and never affect eligible-cell scores; constant NDVI/LST uses 0.5; constant population uses 0 when all reference values are zero, otherwise 0.5; if no priority-eligible cells exist, normalized values and scores are unavailable",
+    "normalization_population": "Complete non-water cells with bare probability <= 0.5; bare-land cells are scored against these ranges for display only.",
+    "priority_eligible_cell_count": 45531,
+    "score_formula": "exposure = 0.5 * normalized(LST) + 0.5 * (1 - normalized(NDVI)); priority = exposure * (0.5 + 0.5 * normalized(population))",
+    "top_cell_count": 4554,
+    "top_list_rule": "ceil(10% of complete, non-water, non-bare cells); sorted by score descending, then stable cell ID ascending.",
+    "valid_non_water_cell_count": 45560,
+    "water_cell_count": 44,
+    "water_rule": "NDVI < 0 is excluded from scoring and top-list ranking."
+  }
+}

@@ -172,7 +172,11 @@ def render_priority_map(
             _display(raw_score),
             _display(raw_ndvi),
             _display(raw_lst),
-            _popup(cell),
+            _display(cell.get("population_estimate"), 0),
+            html.escape(cell.get("recommended_action") or "Unavailable", quote=True),
+            html.escape(cell.get("cell_id") or "", quote=True),
+            1 if cell.get("priority_eligible") == "True" else 0,
+            html.escape(cell.get("exclusion_reason") or "", quote=True),
         ])
 
     data_json = json.dumps(cell_records, separators=(",", ":"))
@@ -194,23 +198,36 @@ def render_priority_map(
       var ndviLayer = L.featureGroup();
       var lstLayer = L.featureGroup();
 
+      function makePopup(d) {{
+        return "<table>" +
+          "<tr><th>Cell ID</th><td>" + d[10] + "</td></tr>" +
+          "<tr><th>NDVI</th><td>" + d[6] + "</td></tr>" +
+          "<tr><th>LST (\\u00b0C)</th><td>" + d[7] + "</td></tr>" +
+          "<tr><th>Estimated population</th><td>" + d[8] + "</td></tr>" +
+          "<tr><th>Priority score</th><td>" + d[5] + "</td></tr>" +
+          "<tr><th>Recommended action</th><td>" + d[9] + "</td></tr>" +
+          "<tr><th>Eligibility</th><td>" + (d[11] ? "Eligible" : "Not eligible") + "</td></tr>" +
+          "<tr><th>Exclusion reason</th><td>" + (d[12] || "\\u2014") + "</td></tr>" +
+          "</table>";
+      }}
+
       cellsData.forEach(function(d) {{
         var lat = d[0], lon = d[1], cScore = d[2], cNdvi = d[3], cLst = d[4];
-        var txtScore = d[5], txtNdvi = d[6], txtLst = d[7], popupHtml = d[8];
+        var txtScore = d[5], txtNdvi = d[6], txtLst = d[7];
 
         var mPriority = L.circleMarker([lat, lon], {{
           radius: 4, color: "#333333", weight: 0.7, fill: true, fillColor: cScore, fillOpacity: 0.8
-        }}).bindPopup(popupHtml, {{maxWidth: 360}}).bindTooltip("Priority: " + txtScore);
+        }}).bindPopup(function() {{ return makePopup(d); }}, {{maxWidth: 360}}).bindTooltip("Priority: " + txtScore);
         priorityLayer.addLayer(mPriority);
 
         var mNdvi = L.circleMarker([lat, lon], {{
           radius: 4, color: "#333333", weight: 0.7, fill: true, fillColor: cNdvi, fillOpacity: 0.8
-        }}).bindPopup(popupHtml, {{maxWidth: 360}}).bindTooltip("NDVI: " + txtNdvi);
+        }}).bindPopup(function() {{ return makePopup(d); }}, {{maxWidth: 360}}).bindTooltip("NDVI: " + txtNdvi);
         ndviLayer.addLayer(mNdvi);
 
         var mLst = L.circleMarker([lat, lon], {{
           radius: 4, color: "#333333", weight: 0.7, fill: true, fillColor: cLst, fillOpacity: 0.8
-        }}).bindPopup(popupHtml, {{maxWidth: 360}}).bindTooltip("LST (°C): " + txtLst);
+        }}).bindPopup(function() {{ return makePopup(d); }}, {{maxWidth: 360}}).bindTooltip("LST (°C): " + txtLst);
         lstLayer.addLayer(mLst);
       }});
 
